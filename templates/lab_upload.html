@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Lab Report - MediVault</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            color: #667eea;
+            font-size: 1.5em;
+        }
+
+        .navbar a {
+            color: #667eea;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 500;
+        }
+
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .upload-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .upload-card h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .upload-card p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .file-upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background: #f8f9fa;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            background: #e9ecef;
+            border-color: #764ba2;
+        }
+
+        .file-upload-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .selected-file {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .selected-file.active {
+            display: block;
+        }
+
+        .selected-file-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .selected-file-name {
+            font-weight: bold;
+            color: #155724;
+        }
+
+        .remove-file {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .remove-file:hover {
+            background: #c82333;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            padding: 12px 30px;
+            font-size: 1em;
+            width: auto;
+            margin-top: 10px;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            border: 2px solid #17a2b8;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .info-box h4 {
+            color: #0c5460;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: #0c5460;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+
+        .processing-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .processing-overlay.active {
+            display: flex;
+        }
+
+        .processing-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>🥼 MediVault</h1>
+        <div>
+            <a href="/lab/dashboard">📊 Dashboard</a>
+            <a href="/logout">🚪 Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="upload-card">
+            <h2>📤 Upload Lab Report</h2>
+            <p>Enter patient Health ID and upload test results. AI will generate summaries automatically.</p>
+
+            <div class="info-box">
+                <h4>ℹ️ Upload Instructions:</h4>
+                <ul>
+                    <li>Get patient's Health ID before uploading</li>
+                    <li>Upload PDF, JPG, or PNG files (max 16MB)</li>
+                    <li>AI processes report and generates summaries</li>
+                    <li>Patient receives notification instantly</li>
+                    <li>Report becomes part of patient's medical history</li>
+                </ul>
+            </div>
+
+            <form id="uploadForm" method="POST" enctype="multipart/form-data" action="/lab/upload">
+                <div class="form-group">
+                    <label for="health_id">🆔 Patient Health ID *</label>
+                    <input 
+                        type="text" 
+                        id="health_id" 
+                        name="health_id" 
+                        placeholder="MV12345" 
+                        required
+                        pattern="[A-Z]{2}[A-Z0-9]{5,}"
+                        title="Enter valid Health ID (e.g., MV12345)"
+                    >
+                    <small style="color: #666; display: block; margin-top: 5px;">
+                        💡 Demo Health ID: <strong>MV12345</strong>
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label>📄 Upload Lab Report</label>
+                    <div class="file-upload-area" id="fileUploadArea">
+                        <div class="file-upload-icon">📄</div>
+                        <h3>Click to upload or drag and drop</h3>
+                        <p>Supported formats: PDF, JPG, PNG</p>
+                        <p style="font-size: 0.9em; color: #999;">Maximum file size: 16 MB</p>
+                    </div>
+                    <input type="file" name="file" id="fileInput" class="file-input" accept=".pdf,.jpg,.jpeg,.png" required>
+                </div>
+
+                <div class="selected-file" id="selectedFile">
+                    <div class="selected-file-info">
+                        <span class="selected-file-name" id="fileName"></span>
+                        <button type="button" class="remove-file" id="removeFile">Remove</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn" id="submitBtn">
+                    🚀 Upload Lab Report
+                </button>
+
+                <div style="text-align: center; margin-top: 15px;">
+                    <a href="/lab/dashboard" class="btn-secondary btn">← Back to Dashboard</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Processing Overlay -->
+    <div class="processing-overlay" id="processingOverlay">
+        <div class="processing-content">
+            <div class="spinner"></div>
+            <h3 style="color: #667eea; margin-bottom: 10px;">Processing Lab Report...</h3>
+            <p style="color: #666;">
+                🤖 AI is analyzing the report<br>
+                📊 Generating summaries<br>
+                📤 Uploading to patient record<br>
+                <br>
+                <strong>Please wait...</strong>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const selectedFile = document.getElementById('selectedFile');
+        const fileName = document.getElementById('fileName');
+        const removeFile = document.getElementById('removeFile');
+        const uploadForm = document.getElementById('uploadForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const processingOverlay = document.getElementById('processingOverlay');
+
+        // Click to upload
+        fileUploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // File selected
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                showSelectedFile(file);
+            }
+        });
+
+        // Drag and drop
+        fileUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadArea.style.background = '#667eea';
+            fileUploadArea.style.color = 'white';
+        });
+
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.style.background = '#f8f9fa';
+            fileUploadArea.style.color = '#333';
+        });
+
+        fileUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadArea.style.background = '#f8f9fa';
+            fileUploadArea.style.color = '#333';
+            
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                fileInput.files = dataTransfer.files;
+                showSelectedFile(file);
+            }
+        });
+
+        // Show selected file
+        function showSelectedFile(file) {
+            const fileSize = (file.size / 1024 / 1024).toFixed(2);
+            fileName.textContent = `${file.name} (${fileSize} MB)`;
+            selectedFile.classList.add('active');
+        }
+
+        // Remove file
+        removeFile.addEventListener('click', () => {
+            fileInput.value = '';
+            selectedFile.classList.remove('active');
+        });
+
+        // Form submission
+        uploadForm.addEventListener('submit', (e) => {
+            processingOverlay.classList.add('active');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+        });
+    </script>
+</body>
+</html>

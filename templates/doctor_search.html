@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Patient - MediVault</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            color: #667eea;
+            font-size: 1.5em;
+        }
+
+        .navbar a {
+            color: #667eea;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 500;
+        }
+
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        .search-card {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .search-card h2 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .search-card p {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 40px;
+        }
+
+        .search-form {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .search-input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 20px 25px;
+            border: 3px solid #667eea;
+            border-radius: 15px;
+            font-size: 1.5em;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: bold;
+            color: #667eea;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+            transform: scale(1.02);
+        }
+
+        .search-input::placeholder {
+            color: #ccc;
+            text-transform: none;
+            letter-spacing: normal;
+            font-weight: normal;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .demo-hint {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .demo-hint strong {
+            color: #856404;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .demo-hint code {
+            background: white;
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-family: monospace;
+            color: #e83e8c;
+            font-size: 1.2em;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            border: 2px solid #17a2b8;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .info-box h4 {
+            color: #0c5460;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: #0c5460;
+        }
+
+        .info-box li {
+            margin-bottom: 5px;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .quick-action {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .quick-action:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+        }
+
+        .quick-action a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+
+        @media (max-width: 768px) {
+            .search-card {
+                padding: 30px 20px;
+            }
+
+            .search-card h2 {
+                font-size: 2em;
+            }
+
+            .search-input {
+                font-size: 1.2em;
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>🏥 MediVault</h1>
+        <div>
+            <a href="/doctor/dashboard">📊 Dashboard</a>
+            <a href="/doctor/voice">🎤 Voice Dictation</a>
+            <a href="/emergency">🚨 Emergency Mode</a>
+            <a href="/logout">🚪 Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="search-card">
+            <h2>🔍 Search Patient</h2>
+            <p>Enter a patient's Health ID to view their complete medical history</p>
+
+            <form action="/doctor/search" method="POST" class="search-form">
+                <div class="search-input-group">
+                    <input 
+                        type="text" 
+                        name="health_id" 
+                        class="search-input" 
+                        placeholder="Enter Health ID" 
+                        pattern="[A-Z]{2}[A-Z0-9]{5,}"
+                        title="Enter valid Health ID (e.g., MV12345)"
+                        required
+                        autofocus
+                    >
+                </div>
+                
+                <button type="submit" class="btn">
+                    🔎 Search Patient Records
+                </button>
+            </form>
+
+            <div class="demo-hint">
+                <strong>💡 Demo Patient Available</strong>
+                Try searching for: <code>MV12345</code>
+            </div>
+
+            <div class="info-box">
+                <h4>ℹ️ What you can access:</h4>
+                <ul>
+                    <li><strong>Complete Medical History:</strong> All uploaded documents and reports</li>
+                    <li><strong>AI-Generated Summaries:</strong> Doctor-friendly clinical summaries</li>
+                    <li><strong>Emergency Summary:</strong> Critical patient information</li>
+                    <li><strong>Lab Reports:</strong> Latest test results with AI analysis</li>
+                    <li><strong>Semantic Search:</strong> Find specific medical information quickly</li>
+                </ul>
+            </div>
+
+            <div class="quick-actions">
+                <div class="quick-action">
+                    <a href="/doctor/dashboard">📊 Dashboard</a>
+                </div>
+                <div class="quick-action">
+                    <a href="/doctor/voice">🎤 Voice Notes</a>
+                </div>
+                <div class="quick-action">
+                    <a href="/emergency">🚨 Emergency</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

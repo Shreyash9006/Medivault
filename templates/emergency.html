@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚨 EMERGENCY MODE - MediVault</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #dc3545 0%, #8b0000 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .emergency-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .emergency-header {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .emergency-header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .warning-banner {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 5px solid #fff;
+        }
+
+        .warning-banner strong {
+            display: block;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .search-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            margin-bottom: 30px;
+        }
+
+        .search-box h2 {
+            color: #dc3545;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            border: 3px solid #dc3545;
+            border-radius: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #8b0000;
+            box-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
+        }
+
+        .btn-emergency {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.3em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #dc3545 0%, #8b0000 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-emergency:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .results-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .results-header {
+            border-bottom: 3px solid #dc3545;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .results-header h2 {
+            color: #dc3545;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .health-id-display {
+            background: #f8f9fa;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 1.5em;
+            font-weight: bold;
+            letter-spacing: 3px;
+            color: #dc3545;
+            text-align: center;
+            margin: 20px 0;
+            border: 2px dashed #dc3545;
+        }
+
+        .critical-info {
+            background: #fff3cd;
+            border: 3px solid #ffc107;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .critical-info h3 {
+            color: #856404;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .critical-info pre {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            color: #333;
+            border-left: 5px solid #dc3545;
+        }
+
+        .metadata {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .metadata-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .metadata-item strong {
+            display: block;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .confidence-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .confidence-high {
+            background: #28a745;
+            color: white;
+        }
+
+        .confidence-medium {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .confidence-low {
+            background: #dc3545;
+            color: white;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            padding: 12px 30px;
+            background: white;
+            color: #dc3545;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .response-time {
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 15px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="emergency-container">
+        <div class="emergency-header">
+            <h1>🚨 EMERGENCY MODE</h1>
+            <p style="font-size: 1.2em;">READ-ONLY ACCESS • NO LOGIN REQUIRED</p>
+        </div>
+
+        {% if not summary %}
+        <!-- SEARCH FORM -->
+        <div class="warning-banner">
+            <strong>⚠️ EMERGENCY ACCESS PROTOCOL</strong>
+            <p>This mode provides instant access to critical patient medical information during emergencies.</p>
+            <p>All access is logged and patients are notified.</p>
+        </div>
+
+        <div class="instructions">
+            <strong>How to use Emergency Mode:</strong>
+            <ul>
+                <li>Enter the patient's Health ID (format: MV12345)</li>
+                <li>Or scan the patient's QR code</li>
+                <li>Critical medical summary appears in &lt;15 seconds</li>
+                <li>Access is automatically logged for audit trail</li>
+            </ul>
+        </div>
+
+        <div class="search-box">
+            <h2>Enter Patient Health ID</h2>
+            
+            <form method="POST" action="/emergency">
+                <div class="input-group">
+                    <label for="health_id">🆔 Health ID</label>
+                    <input 
+                        type="text" 
+                        id="health_id" 
+                        name="health_id" 
+                        placeholder="MV12345" 
+                        required
+                        pattern="[A-Z]{2}[A-Z0-9]{5,}"
+                        title="Enter valid Health ID (e.g., MV12345)"
+                    >
+                </div>
+                
+                <button type="submit" class="btn-emergency">
+                    🚨 RETRIEVE EMERGENCY INFORMATION
+                </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 20px; color: #666;">
+                <p><strong>Demo Health ID:</strong> MV12345</p>
+            </div>
+        </div>
+
+        {% else %}
+        <!-- RESULTS DISPLAY -->
+        <div class="results-box">
+            {% if summary.success %}
+            <div class="alert-success">
+                ✅ <strong>Emergency information retrieved successfully</strong>
+            </div>
+
+            <div class="results-header">
+                <h2>🚨 CRITICAL MEDICAL INFORMATION</h2>
+                <p>Emergency access logged • Patient will be notified</p>
+            </div>
+
+            <div class="health-id-display">
+                🆔 {{ health_id }}
+            </div>
+
+            <div class="critical-info">
+                <h3>⚡ CRITICAL SUMMARY</h3>
+                <pre>{{ summary.emergency_summary }}</pre>
+            </div>
+
+            <div class="metadata">
+                <div class="metadata-item">
+                    <strong>Confidence Level</strong>
+                    <span class="confidence-badge confidence-{{ summary.confidence.lower() }}">
+                        {{ summary.confidence }}
+                    </span>
+                </div>
+
+                <div class="metadata-item">
+                    <strong>Last Updated</strong>
+                    {{ summary.last_updated[:19] if summary.last_updated else 'Unknown' }}
+                </div>
+
+                <div class="metadata-item">
+                    <strong>Sources Used</strong>
+                    {{ summary.source_count }} medical record(s)
+                </div>
+
+                <div class="metadata-item">
+                    <strong>Response Time</strong>
+                    {{ "%.2f"|format(summary.response_time) }} seconds
+                </div>
+            </div>
+
+            {% if summary.cached %}
+            <div class="alert-warning" style="margin-top: 20px;">
+                ℹ️ This is a cached summary. For the most recent information, contact medical staff.
+            </div>
+            {% endif %}
+
+            <div class="response-time">
+                Retrieved in {{ "%.2f"|format(summary.response_time) }} seconds
+            </div>
+
+            {% else %}
+            <!-- ERROR STATE -->
+            <div class="alert-danger">
+                ❌ <strong>Unable to retrieve emergency information</strong>
+            </div>
+
+            <div class="results-header">
+                <h2>⚠️ Patient Not Found</h2>
+            </div>
+
+            <div class="health-id-display">
+                🆔 {{ health_id }}
+            </div>
+
+            <div class="critical-info">
+                <h3>ℹ️ Information</h3>
+                <pre>{{ summary.emergency_summary }}</pre>
+            </div>
+
+            <div class="alert-warning">
+                <strong>Next Steps:</strong>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>Verify the Health ID is correct</li>
+                    <li>Check if patient has registered with MediVault</li>
+                    <li>Contact patient or family for medical history</li>
+                    <li>Proceed with standard emergency protocols</li>
+                </ul>
+            </div>
+            {% endif %}
+
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="/emergency" class="back-link">🔄 Search Another Patient</a>
+                <a href="/" class="back-link">🏠 Back to Home</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="warning-banner" style="margin-top: 30px;">
+            <strong>📋 AUDIT TRAIL</strong>
+            <p>This emergency access has been logged with timestamp and IP address.</p>
+            <p>Patients are notified of all emergency mode accesses to their records.</p>
+        </div>
+
+        <div style="text-align: center; padding: 30px;">
+            <a href="/" class="back-link">← Back to MediVault Home</a>
+        </div>
+    </div>
+</body>
+</html>

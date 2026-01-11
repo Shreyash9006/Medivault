@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Dictation - MediVault</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            color: #667eea;
+            font-size: 1.5em;
+        }
+
+        .navbar a {
+            color: #667eea;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 500;
+        }
+
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .voice-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .voice-card h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .voice-card p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .recorder-section {
+            text-align: center;
+            padding: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .mic-button {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .mic-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .mic-button.recording {
+            animation: pulse 1.5s infinite;
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(220, 53, 69, 0.3); }
+            50% { transform: scale(1.1); box-shadow: 0 15px 50px rgba(220, 53, 69, 0.6); }
+        }
+
+        .mic-icon {
+            font-size: 4em;
+        }
+
+        .recording-status {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .recording-status.active {
+            color: #dc3545;
+        }
+
+        .timer {
+            font-size: 2em;
+            font-family: monospace;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .language-selector {
+            margin-bottom: 30px;
+        }
+
+        .language-selector label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .language-selector select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1em;
+        }
+
+        .transcript-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: none;
+        }
+
+        .transcript-section.active {
+            display: block;
+        }
+
+        .transcript-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .transcript-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+            margin-bottom: 20px;
+            min-height: 100px;
+            line-height: 1.6;
+        }
+
+        .structured-data {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .structured-data h4 {
+            color: #155724;
+            margin-bottom: 15px;
+        }
+
+        .structured-data pre {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 0.9em;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            border: 2px solid #17a2b8;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .info-box h4 {
+            color: #0c5460;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: #0c5460;
+        }
+
+        .info-box li {
+            margin-bottom: 5px;
+        }
+
+        .processing-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .processing-overlay.active {
+            display: flex;
+        }
+
+        .processing-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>🏥 MediVault</h1>
+        <div>
+            <a href="/doctor/dashboard">📊 Dashboard</a>
+            <a href="/logout">🚪 Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="voice-card">
+            <h2>🎤 Voice Dictation</h2>
+            <p>Record clinical notes in any language. Whisper AI will transcribe and GPT-4 will structure the data.</p>
+
+            <div class="info-box">
+                <h4>ℹ️ How it works:</h4>
+                <ul>
+                    <li><strong>Step 1:</strong> Select language and click the microphone</li>
+                    <li><strong>Step 2:</strong> Speak naturally - dictate diagnosis, medications, tests, etc.</li>
+                    <li><strong>Step 3:</strong> Click stop when done</li>
+                    <li><strong>Step 4:</strong> AI transcribes speech and converts to structured JSON</li>
+                    <li><strong>Supported:</strong> Hindi, Tamil, Telugu, English, and 90+ languages</li>
+                </ul>
+            </div>
+
+            <div class="language-selector">
+                <label for="language">🌍 Select Language</label>
+                <select id="language">
+                    <option value="">Auto-detect</option>
+                    <option value="en">English</option>
+                    <option value="hi">Hindi (हिंदी)</option>
+                    <option value="ta">Tamil (தமிழ்)</option>
+                    <option value="te">Telugu (తెలుగు)</option>
+                    <option value="mr">Marathi (मराठी)</option>
+                    <option value="bn">Bengali (বাংলা)</option>
+                </select>
+            </div>
+
+            <div class="recorder-section">
+                <button class="mic-button" id="micButton">
+                    <span class="mic-icon">🎤</span>
+                </button>
+                
+                <div class="recording-status" id="status">Click microphone to start recording</div>
+                <div class="timer" id="timer">00:00</div>
+                
+                <p style="color: #666; margin-top: 20px;">
+                    <strong>Demo mode:</strong> For hackathon demonstration, click the button below to simulate voice input
+                </p>
+                <button class="btn" id="demoButton" style="margin-top: 15px;">
+                    🎬 Use Demo Transcript
+                </button>
+            </div>
+        </div>
+
+        <div class="transcript-section" id="transcriptSection">
+            <h3>📝 Transcript</h3>
+            <div class="transcript-box" id="transcriptBox">
+                Transcript will appear here...
+            </div>
+
+            <div class="structured-data" id="structuredData" style="display: none;">
+                <h4>✅ Structured Clinical Data (JSON)</h4>
+                <pre id="jsonOutput"></pre>
+                
+                <button class="btn" id="saveButton">💾 Save to Patient Record</button>
+                <button class="btn btn-secondary" id="newButton">🔄 New Recording</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Processing Overlay -->
+    <div class="processing-overlay" id="processingOverlay">
+        <div class="processing-content">
+            <div class="spinner"></div>
+            <h3 style="color: #667eea; margin-bottom: 10px;">Processing Audio...</h3>
+            <p style="color: #666;">
+                🎤 Transcribing with Whisper AI<br>
+                🤖 Structuring data with GPT-4<br>
+                <br>
+                <strong>Please wait...</strong>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let isRecording = false;
+        let startTime;
+        let timerInterval;
+        let mediaRecorder;
+        let audioChunks = [];
+
+        const micButton = document.getElementById('micButton');
+        const status = document.getElementById('status');
+        const timer = document.getElementById('timer');
+        const demoButton = document.getElementById('demoButton');
+        const transcriptSection = document.getElementById('transcriptSection');
+        const transcriptBox = document.getElementById('transcriptBox');
+        const structuredData = document.getElementById('structuredData');
+        const jsonOutput = document.getElementById('jsonOutput');
+        const processingOverlay = document.getElementById('processingOverlay');
+        const saveButton = document.getElementById('saveButton');
+        const newButton = document.getElementById('newButton');
+
+        // Microphone button click
+        micButton.addEventListener('click', toggleRecording);
+
+        // Demo button - simulates voice input
+        demoButton.addEventListener('click', useDemoTranscript);
+
+        function toggleRecording() {
+            if (!isRecording) {
+                startRecording();
+            } else {
+                stopRecording();
+            }
+        }
+
+        function startRecording() {
+            // Note: Real browser audio recording would use MediaRecorder API
+            // For demo, we'll simulate
+            isRecording = true;
+            micButton.classList.add('recording');
+            status.textContent = '🔴 Recording in progress...';
+            status.classList.add('active');
+            
+            startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 1000);
+
+            alert('🎤 Note: For hackathon demo, browser microphone recording is simulated.\n\nIn production, this would use:\n- MediaRecorder API for audio capture\n- Whisper API for transcription\n- GPT-4 for structuring\n\nClick "Use Demo Transcript" to see the full flow!');
+        }
+
+        function stopRecording() {
+            isRecording = false;
+            micButton.classList.remove('recording');
+            status.textContent = 'Recording stopped';
+            status.classList.remove('active');
+            clearInterval(timerInterval);
+            
+            // In real implementation, would send audio to server here
+            alert('Recording stopped. Click "Use Demo Transcript" to see AI processing.');
+        }
+
+        function updateTimer() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            timer.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function useDemoTranscript() {
+            // Show processing overlay
+            processingOverlay.classList.add('active');
+
+            // Simulate API processing delay
+            setTimeout(() => {
+                const demoTranscript = "Patient came in complaining of fever and cough for three days. Temperature is 101 degrees Fahrenheit. Diagnosed with upper respiratory tract infection. Prescribed Azithromycin 500 milligrams once daily for 5 days and Paracetamol 500 milligrams three times daily for fever. Also ordered complete blood count and chest x-ray. Patient should follow up in one week. This is medium urgency.";
+
+                const demoStructured = {
+                    "diagnosis": "Upper Respiratory Tract Infection",
+                    "medications": [
+                        {"name": "Azithromycin", "dose": "500mg", "frequency": "once daily for 5 days"},
+                        {"name": "Paracetamol", "dose": "500mg", "frequency": "three times daily"}
+                    ],
+                    "tests_ordered": ["Complete Blood Count", "Chest X-Ray"],
+                    "follow_up_days": 7,
+                    "urgency": "medium",
+                    "notes": "Patient presented with fever (101°F) and cough for 3 days",
+                    "symptoms": ["fever", "cough"]
+                };
+
+                transcriptBox.textContent = demoTranscript;
+                jsonOutput.textContent = JSON.stringify(demoStructured, null, 2);
+                
+                transcriptSection.classList.add('active');
+                structuredData.style.display = 'block';
+                processingOverlay.classList.remove('active');
+
+                // Scroll to results
+                transcriptSection.scrollIntoView({ behavior: 'smooth' });
+            }, 3000);
+        }
+
+        saveButton.addEventListener('click', () => {
+            alert('✅ Clinical note saved to patient record!\n\nIn production, this would:\n- Save structured data to database\n- Link to patient Health ID\n- Update patient medical history\n- Generate AI summary');
+            newButton.click();
+        });
+
+        newButton.addEventListener('click', () => {
+            transcriptSection.classList.remove('active');
+            structuredData.style.display = 'none';
+            timer.textContent = '00:00';
+            status.textContent = 'Click microphone to start recording';
+        });
+    </script>
+</body>
+</html>

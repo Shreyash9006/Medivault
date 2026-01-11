@@ -1,0 +1,16 @@
+.env
+   __pycache__/
+   *.pyc
+   *.db
+   static/uploads/*
+   !static/uploads/.gitkeep
+   static/qrcodes/*
+   !static/qrcodes/.gitkeep
+   venv/
+   .vscode/
+   .idea/
+```
+
+3. **Create `Procfile`** (for Heroku/deployment)
+```
+   web: gunicorn app:app
